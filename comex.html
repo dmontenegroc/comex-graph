@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>COMEX • Expresado en US$M</title>
+  <style>
+    :root{
+      --bg:#0f1214;
+      --fg:#ffffff;
+      --muted:#c9c9c9;
+      --grid:#8a8a8a;
+      --exp:#31c24a;
+      --imp:#ff3d2e;
+      --saldo:#ffffff;
+      --rightAxis:#2ecc71;
+    }
+    html,body{margin:0;padding:0;background:var(--bg);color:var(--fg);font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
+    .wrap{max-width:1100px;margin:0 auto;padding:16px}
+    .title{font-size:24px;font-weight:800;letter-spacing:.2px;margin:0}
+    .subtitle{font-size:14px;color:var(--muted);margin:2px 0 12px 0}
+    .chartbox{position:relative;width:100%;height:560px;border-radius:10px}
+    .credit{font-size:12px;color:var(--muted);text-align:right;margin-top:8px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="title">COMEX</div>
+    <div class="subtitle">Expresado en US$M</div>
+    <div class="chartbox">
+      <canvas id="comex"></canvas>
+    </div>
+    <div class="credit">Fuente: datos provistos por el usuario</div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <script>
+    const labels = [
+      "Q 1 2015","Q 2 2015","Q 3 2015","Q 4 2015",
+      "Q 1 2016","Q 2 2016","Q 3 2016","Q 4 2016",
+      "Q 1 2017","Q 2 2017","Q 3 2017","Q 4 2017",
+      "Q 1 2018","Q 2 2018","Q 3 2018","Q 4 2018",
+      "Q 1 2019","Q 2 2019","Q 3 2019","Q 4 2019",
+      "Q 1 2020","Q 2 2020","Q 3 2020","Q 4 2020",
+      "Q 1 2021","Q 2 2021","Q 3 2021","Q 4 2021",
+      "Q 1 2022","Q 2 2022","Q 3 2022","Q 4 2022",
+      "Q 1 2023","Q 2 2023","Q 3 2023","Q 4 2023",
+      "Q 1 2024","Q 2 2024","Q 3 2024","Q 4 2024",
+      "Q 1 2025"
+    ];
+
+    const exp = [
+      2.333,2.370,2.231,1.989,1.645,1.777,2.000,1.836,
+      1.708,2.101,2.327,2.231,2.125,2.420,2.416,2.149,
+      2.028,2.199,2.458,2.249,2.077,1.141,1.612,2.263,
+      2.353,2.758,2.968,3.181,3.380,3.966,3.691,2.886,
+      2.645,2.908,2.839,2.527,1.931,2.494,2.392,2.243,
+      1.170
+    ].map(v => v * 1000);
+
+    const imp = [
+      2.436,2.300,2.423,2.684,2.022,2.066,2.151,2.324,
+      2.255,2.210,2.435,2.474,2.287,2.359,2.435,2.922,
+      2.458,2.489,2.419,2.459,1.973,1.204,1.672,2.106,
+      1.919,2.110,2.273,2.819,2.425,2.876,3.372,3.223,
+      2.797,2.738,2.919,3.035,2.495,2.362,2.558,2.490,
+      1.497
+    ].map(v => v * 1000);
+
+    const saldo = [
+      -103,70,-192,-695,-377,-289,-151,-488,-546,-109,-108,-243,
+      -162,61,-18,-773,-430,-291,39,-210,105,-63,-61,157,
+      434,647,695,362,955,1091,319,-337,-152,170,-80,-508,
+      -564,132,-166,-247,-327
+    ];
+
+    const fmt = new Intl.NumberFormat("es-BO");
+
+    const ctx = document.getElementById("comex");
+    new Chart(ctx, {
+      type: "bar",
+      data: {
+        labels,
+        datasets: [
+          {
+            type: "bar",
+            label: "Saldo Comercial",
+            data: saldo,
+            yAxisID: "ySaldo",
+            backgroundColor: "rgba(255,255,255,0.9)",
+            borderWidth: 0,
+            barPercentage: 0.8,
+            categoryPercentage: 0.8,
+            order: 0
+          },
+          {
+            type: "line",
+            label: "Exportaciones",
+            data: exp,
+            yAxisID: "yComex",
+            borderColor: getCSS("--exp"),
+            backgroundColor: getCSS("--exp"),
+            pointBackgroundColor: getCSS("--exp"),
+            pointBorderColor: getCSS("--exp"),
+            borderWidth: 2,
+            tension: 0.3,
+            pointRadius: 3,
+            pointHoverRadius: 4,
+            fill: false,
+            order: 1
+          },
+          {
+            type: "line",
+            label: "Importaciones",
+            data: imp,
+            yAxisID: "yComex",
+            borderColor: getCSS("--imp"),
+            backgroundColor: getCSS("--imp"),
+            pointBackgroundColor: getCSS("--imp"),
+            pointBorderColor: getCSS("--imp"),
+            borderWidth: 2,
+            tension: 0.3,
+            pointRadius: 3,
+            pointHoverRadius: 4,
+            fill: false,
+            order: 1
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: "index", intersect: false },
+        plugins: {
+          legend: {
+            position: "top",
+            labels: { color: "#ffffff", usePointStyle: true, boxWidth: 10, boxHeight: 10 }
+          },
+          tooltip: {
+            backgroundColor: "#111",
+            titleColor: "#fff",
+            bodyColor: "#fff",
+            padding: 10,
+            callbacks: {
+              label: (ctx) => {
+                const name = ctx.dataset.label;
+                const v = ctx.parsed.y;
+                const isSaldo = name === "Saldo Comercial";
+                return `${name}: ${fmt.format(v)}`;
+              }
+            }
+          },
+          title: { display: false }
+        },
+        scales: {
+          x: {
+            ticks: { color: "#e6e6e6", maxRotation: 60, minRotation: 60, autoSkip: true },
+            grid: { color: "rgba(255,255,255,0.25)", lineWidth: 1 }
+          },
+          ySaldo: {
+            position: "left",
+            min: -800,
+            max: 1100,
+            grid: { color: "rgba(255,255,255,0.25)", lineWidth: 1 },
+            ticks: { color: "#e6e6e6", callback: (v) => fmt.format(v) },
+            title: { display: true, text: "Saldo comercial" }
+          },
+          yComex: {
+            position: "right",
+            min: 1000,
+            max: 4200,
+            grid: { drawOnChartArea: false },
+            ticks: { color: "#2ecc71", callback: (v) => fmt.format(v) },
+            title: { display: true, text: "Exportaciones e Importaciones" }
+          }
+        },
+        elements: { point: { hitRadius: 8 } }
+      }
+    });
+
+    function getCSS(name){
+      return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+    }
+  </script>
+</body>
+</html>
